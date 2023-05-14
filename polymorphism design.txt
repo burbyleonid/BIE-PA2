@@ -1,0 +1,34 @@
+1) Class Field - main class for creating the map. Contains a type to understand what we have in that field like
+a main building, different types of towers, or just an empty field.
+
+2) Class Game - describes the basic functions of starting and keeping
+the game, as well as the gameplay. Allows you to create a game, build a building, start a new day, load,
+and save the game.
+
+3) Classes Defines - a class that describes the base dimensions when creating all windows.
+
+4) Class MainWindow - the main window that starts when the game starts. Allows you to start a new game, 
+save and load the game. Has a relationship with the class Game.
+
+5) Class UIBase - the main class for working with graphics.
+
+6) Class UIButton - a class that allows you to work with buttons, is inherited from the class UIBase.
+
+7) Class UILoadDialog - the class that handles the loading of the game.
+
+8) Class UISaveDialog - the class that handles the saving of the game.
+
+9) Class UIText - allows you to work with text, display it on the screen, and support a font called Coffee_Extra. 
+Inherited from class UIBase.
+
+10) Class UITextures - allows working with textures, loading from a file, and displaying on the screen
+
+
+Those classes are not implemented yet but should be in the final version:
+
+11) Class Levels - a class that will contain a description of the map, based on the Field class with a path of enemies
+and possible places for towers.
+
+12) Enemies - main class for all Enemies. A few more specific classes will be inhered from it, with different attributes.
+
+The main usage of polymorphism will be while working with graphs and GUI. 
