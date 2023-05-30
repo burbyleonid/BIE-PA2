@@ -31,35 +31,33 @@ void UIText::setFontSize(int fontSize)
 
 void UIText::createTextTexture(const std::string &text, const SDL_Color &textColor)
 {
-  std::string fontFName = "Coffee_Extra.ttf";
-  std::string fontPath = "./src/" + fontFName;
+std::string fontFName = "Coffee_Extra.ttf";
+std::string fontPath = "./src/" + fontFName;
 
+TTF_Font *font = TTF_OpenFont( fontPath.c_str(), m_fontSize);
 
+if (!font)
+    printf("TTF_OpenFont: %s\n", TTF_GetError());
 
-  TTF_Font *font = TTF_OpenFont( fontPath.c_str(), m_fontSize);
+// destroy texture first to prevent memleaks
+if (m_texture)
+  SDL_DestroyTexture(m_texture);
 
-  if (!font)
-      printf("TTF_OpenFont: %s\n", TTF_GetError());
+SDL_Surface *textSurface = TTF_RenderText_Solid(font, text.c_str(), textColor);
+TTF_CloseFont(font);
 
-  // destroy texture first to prevent memleaks
-  if (m_texture)
-    SDL_DestroyTexture(m_texture);
+SDL_Rect _textRect{0, 0, 0, 0};
 
-  SDL_Surface *textSurface = TTF_RenderText_Solid(font, text.c_str(), textColor);
-  TTF_CloseFont(font);
+m_texture = SDL_CreateTextureFromSurface(getRenderer(), textSurface);
 
-  SDL_Rect _textRect{0, 0, 0, 0};
+// no surface exists but some shape has been drawn for that ui element
+SDL_QueryTexture(m_texture, nullptr, nullptr, &_textRect.w, &_textRect.h);
 
-  m_texture = SDL_CreateTextureFromSurface(getRenderer(), textSurface);
+_textRect.x = m_uiElementRect.x + (m_uiElementRect.w / 2) - (_textRect.w / 2);
+_textRect.y = m_uiElementRect.y + (m_uiElementRect.h / 2) - (_textRect.h / 2);
+m_uiElementRect = _textRect;
 
-  // no surface exists but some shape has been drawn for that ui element
-  SDL_QueryTexture(m_texture, nullptr, nullptr, &_textRect.w, &_textRect.h);
-
-  _textRect.x = m_uiElementRect.x + (m_uiElementRect.w / 2) - (_textRect.w / 2);
-  _textRect.y = m_uiElementRect.y + (m_uiElementRect.h / 2) - (_textRect.h / 2);
-  m_uiElementRect = _textRect;
-
-  /* Delete no longer needed surface */
-  SDL_FreeSurface(textSurface);
+/* Delete no longer needed surface */
+SDL_FreeSurface(textSurface);
 
 }

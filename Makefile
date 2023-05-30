@@ -27,16 +27,17 @@ VPATH := $(source_dirs)
 include $(wildcard *.d) 
 
 run:
+	export DISPLAY=:0
 	./$(program_name)
-
 
 clean:
 	-rm -f $(program_name)
 	-rm -Rf burbyleo
+	rm -f *.o
+	rm -f *.d
 
 doc:
-	#
-	# Documentation statically generated in directory "doc".
+	@echo "Documentation statically generated in directory \"doc\"."
 	# Open Xming
 	# export DISPLAY=:0
 	# xeyes for testing
@@ -50,3 +51,7 @@ compile: $(program_name)
 	cp ./src/Coffee_Extra.ttf ./burbyleo/src/Coffee_Extra.ttf
 	rm -f *.o
 	rm -f *.d
+
+count:
+	@lines_count=$$(find . -type f \( -name "*.cpp" -o -name "*.hpp" \) -exec cat {} + | wc -l); \
+	echo "Total number of lines is $$lines_count"

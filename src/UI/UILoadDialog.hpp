@@ -15,10 +15,11 @@ using namespace std;
 class UILoadDialog
 {
 public:
-    UILoadDialog() = default;
-    ~UILoadDialog() = default;
+  UILoadDialog() = default;
+  ~UILoadDialog() = default;
 
-    std::string getFileName();
+  static std::string getFileName();
+  static int getLvl();
 private:
 };
 

@@ -13,17 +13,18 @@ using namespace std;
 class MainWindow
 {
 public:
-    MainWindow() = default;
-    ~MainWindow() ;
+  MainWindow() = default;
+  ~MainWindow() ;
 
-    bool initialize();  // creates a window
-    int menu();
-    std::string loadMenu();
-    bool run(const std::string &fileName = "");
+  bool initialize();  // creates a window
+  int menu();
+  std::string loadMenu();
+  int lvlMenu();
+  bool run(int lvl, const std::string &fileName = "");
 private:
-    SDL_Window *m_window = nullptr;     // pointer to the SDL_Window
-    SDL_Renderer *m_renderer = nullptr; // pointer to the SDL_Renderer
-    UITextures m_textures;              // textures to draw
+  SDL_Window *m_window = nullptr;     // pointer to the SDL_Window
+  SDL_Renderer *m_renderer = nullptr; // pointer to the SDL_Renderer
+  UITextures m_textures;              // textures to draw
 };
 
 #endif /* MainWindow_hpp */
