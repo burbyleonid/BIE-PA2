@@ -46,7 +46,7 @@ Game::Game(int lvl) : m_resources({100, 100, 100}){
 
 // adding building on map with type and coords
 void Game::addBuild(int buildType, int i, int j) {
-  m_builds[buildType].insert({i, j});
+  m_builds[buildType][{i, j}] = false;
   m_map[i][j]->m_type = buildType;
   for (int i = 0; i < m_resources.size(); ++i) {
     m_resources[i] -= m_buildsCost[buildType][i];
@@ -57,13 +57,26 @@ bool Game::nextStep() {
   m_daysCount++;
 
   std::vector<int> del;
-  for (int i = 0; i < m_enemies.size(); ++i) {
-    auto &enemy = m_enemies[i];
-    auto tmp = enemy.getPosition();
-    m_map[tmp.first][tmp.second]->m_type = -2;
-    if (enemy.move(m_mainBuild)) {
-      m_mainHealth -= enemy.getDamage();
-      del.push_back(i);
+
+  for (auto &resp : m_respawns) {
+    std::vector<int> del;
+    auto &enemies = resp.getEnemies();
+    for (int i = 0; i < enemies.size(); ++i) {
+      auto &enemy = enemies[i];
+      auto tmp = resp.getCoordInPath(enemy.getPosition());
+      m_map[tmp.first][tmp.second]->m_type = -2;
+
+      int pos = enemy.move();
+
+      if (resp.getCoordInPath(pos) == m_mainBuild) {
+        m_mainHealth -= enemy.getDamage();
+        std:cout<<"Town hall got damaged, " << m_mainHealth << " HP left." << std::endl;
+        del.push_back(i);
+      }
+    }
+
+    for (int i = (int)(del.size() - 1); i >= 0; i--) {
+      enemies.erase(enemies.begin() + del[i]);
     }
   }
 
@@ -71,20 +84,27 @@ bool Game::nextStep() {
     return false;
   }
 
-  for (int i = (int)(del.size() - 1); i >= 0; i--) {
-    m_enemies.erase(m_enemies.begin() + del[i]);
-  }
-  for (int i = 0; i < m_enemies.size(); ++i) {
-    auto &enemy = m_enemies[i];
-    auto tmp = enemy.getPosition();
-    m_map[tmp.first][tmp.second]->m_type = -3;
+  for (auto &resp : m_respawns) {
+    auto &enemies = resp.getEnemies();
+    for (int i = 0; i < enemies.size(); ++i) {
+      auto &enemy = enemies[i];
+      auto tmp = resp.getCoordInPath(enemy.getPosition());
+      m_map[tmp.first][tmp.second]->m_type = -3;
+    }
   }
 
   for (auto &resp : m_respawns) {
     if (!resp.isEmpty()) {
-      m_enemies.push_back(resp.getEnemy());
-      auto tmp = m_enemies.rbegin()->getPosition();
+      auto &enemies = resp.getEnemies();
+      resp.realiseEnemy();
+      auto tmp = resp.getCoordInPath(enemies.rbegin()->getPosition());
       m_map[tmp.first][tmp.second]->m_type = -3;
+    }
+  }
+
+  for (auto &m : m_builds) {
+    for (auto &p : m) {
+      p.second = false;
     }
   }
 
@@ -120,20 +140,40 @@ bool Game::load(const std::string &fileName) {
   f >> m_mainBuild.first >> m_mainBuild.second;
   f >> m_mainHealth;
 
-
   for (size_t i = 0; i < m_width; ++i) {
     for (size_t j = 0; j < m_height; ++j) {
       int type;
       f >> type;
       m_map[i][j] = make_shared<Field>(type);
-      if (type >= 0 && type <= 3) {
-        m_builds[type].insert({i, j});
-      }
+    }
+  }
+
+  for (int type = 0; type < 4; ++type) {
+    cout << type << endl;
+    size_t size;
+    f >> size;
+    cout << size << endl;
+    for (size_t i = 0; i < size; ++i) {
+      int x, y;
+      bool status;
+      f >> x >> y >> status;
+      m_builds[type][{x, y}] = status;
+
+      cout << x << ' ' << y << ' ' << status << std::endl;
     }
   }
 
   for (size_t i = 0; i < m_resources.size(); ++i) {
     f >> m_resources[i];
+  }
+
+  f >> m_enemyScore;
+
+  size_t respCount;
+  f >> respCount;
+
+  for (size_t i = 0; i < respCount; ++i) {
+    m_respawns.push_back(Respawn(f));
   }
 
   return true;
@@ -146,7 +186,6 @@ void Game::save(const std::string &fileName) {
   f << m_daysCount << std::endl;
   f << m_mainBuild.first << " " << m_mainBuild.second << std::endl;
 
-
   f << m_mainHealth << std::endl;
 
   for (size_t i = 0; i < m_width; ++i) {
@@ -154,6 +193,17 @@ void Game::save(const std::string &fileName) {
       f << m_map[i][j]->m_type << " ";
     }
     f << std::endl;
+  }
+
+  for (int type = 0; type < 4; ++type) {
+    cout << type << endl;
+    f << m_builds[type].size() << endl;
+    cout << "Size = " << m_builds[type].size() << endl;
+    for (auto &p : m_builds[type]) {
+      f << p.first.first << ' ' << p.first.second << ' ' << p.second << std::endl;
+
+      cout << "(x, y, status) = " << p.first.first << ' ' << p.first.second << ' ' << p.second << std::endl;
+    }
   }
 
   for (size_t i = 0; i < m_resources.size(); ++i) {
@@ -165,12 +215,8 @@ void Game::save(const std::string &fileName) {
 
   f << m_respawns.size() << std::endl;
   for (auto &resp : m_respawns) {
-    
+    resp.save(f);
   }
-
-
-  std::vector<Respawn> m_respawns;
-  std::vector<Enemy> m_enemies;
 }
 
 

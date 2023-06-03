@@ -515,7 +515,7 @@ bool MainWindow::run(int lvl, const std::string &fileName) {
 
   Game game(lvl);
   if (fileName.size() != 0) {
-    game.load("../SavedGames/" + fileName);
+    game.load("/Users/Petr/ClionProjects/Tasks/Tasks/SavedGames/" + fileName);
   }
 
   auto &map = game.getMap();
@@ -528,8 +528,8 @@ bool MainWindow::run(int lvl, const std::string &fileName) {
 
   int buildingsIdx = -1;
 
-  std::set<std::pair<int, int>> towers;
-  std::set<std::pair<int, int>> usedTowers;
+  std::set<std::pair<int, int>> towers = game.getActiveTowers();
+  std::set<std::pair<int, int>> usedTowers = game.getUsedTowers();
   std::pair<int, int> toggleTower = {-1, -1};
 
   //
@@ -582,7 +582,6 @@ bool MainWindow::run(int lvl, const std::string &fileName) {
       } else {
 
         uiMap[i].emplace_back(UIButton({ int(i * dx), int(controlHeight + j * dy), int(dx), int(dy) }, m_window, m_renderer));
-        // uiMap[i][j].setText(game.getCellInfo(i, j));
 
 
         uiMap[i][j].registerCallbackFunction(
@@ -640,6 +639,7 @@ bool MainWindow::run(int lvl, const std::string &fileName) {
                                                      return ;
                                                    }
                                                  }
+
                                                  towers.erase(toggleTower);
                                                  usedTowers.insert(toggleTower);
                                                  uiMap[toggleTower.first][toggleTower.second].setCheckState(false);
@@ -677,19 +677,6 @@ bool MainWindow::run(int lvl, const std::string &fileName) {
                                               }
                                             });
   }
-
-
-  // UIButton buyWorker({ (SCREEN_WIDTH - buldingDx) / 2+buldingDx, 0, buldingDx, controlHeight }, m_window, m_renderer);
-  // buyWorker.setText("Buy W");
-  // buyWorker.registerCallbackFunction(
-  //                               [this, &game, &uiMap, &resourcesText, controlHeight]()
-  //                               {
-  //                                   game.buyWorker();
-  //                                   resourcesText.setText(game.getResourcesText());
-  //                                   resourcesText.setPosition(SCREEN_WIDTH - resourcesText.getUiElementRect().w, controlHeight / 2 + (controlHeight / 2 - resourcesText.getUiElementRect().h) / 2);
-  //                                   auto mB = game.getMainBuildCord();
-  //                                   uiMap[mB.first][mB.second].setText(game.getCellInfo(mB.first, mB.second));
-  //                               });
 
   next.registerCallbackFunction(
                                 [this, &game, &running, &resourcesText, &usedTowers, &towers, &buildingsUI, &toggleTower, &buildingsIdx, &uiMap, controlHeight, &daysScoreText]()
@@ -765,6 +752,11 @@ bool MainWindow::run(int lvl, const std::string &fileName) {
   uiElements.push_back(&next);
   // uiElements.push_back(&buyWorker);
   uiElements.push_back(&save);
+
+  for(auto &p : towers) {
+    uiMap[p.first][p.second].isToggleButton = true;
+    uiMap[p.first][p.second].setCheckState(false);
+  }
 
   while(running){
     SDL_Event event;

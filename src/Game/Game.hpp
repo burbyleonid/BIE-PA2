@@ -6,6 +6,7 @@
 #include <vector>
 #include <array>
 #include <set>
+#include <map>
 #include <memory>
 #include "Field.hpp"
 #include "Respawn.hpp"
@@ -22,9 +23,6 @@ public:
   vector<vector<shared_ptr<Field>>> &getMap() { return m_map; }
 
   bool isWin() const {
-    if (m_enemies.size()) {
-      return false;
-    }
     for (const auto &resp : m_respawns) {
       if (!resp.isEmpty()) {
         return false;
@@ -45,20 +43,50 @@ public:
   bool towerToEnemy(std::pair<int, int> towerPos, std::pair<int, int> enemyPos) {
     int towerDamage = m_buildsDamage[m_map[towerPos.first][towerPos.second]->m_type];
 
-    for (int i = 0; i < m_enemies.size(); ++i) {
-      auto &enemy = m_enemies[i];
-      if (enemy.getPosition() == enemyPos) {
-        if (!enemy.takeDamage(towerDamage)) {
-          m_enemyScore += 10;
-          m_enemies.erase(m_enemies.begin() + i);
+    for (auto &resp : m_respawns) {
+      auto &enemies = resp.getEnemies();
+      for (int i = 0; i < enemies.size(); ++i) {
+        auto &enemy = enemies[i];
+        if (resp.getCoordInPath(enemy.getPosition()) == enemyPos) {
+          m_builds[m_map[towerPos.first][towerPos.second]->m_type][towerPos] = true;
+          if (!enemy.takeDamage(towerDamage)) {
+            m_enemyScore += 10;
+            enemies.erase(enemies.begin() + i);
 
-          return true;
+            return true;
+          }
+          return false;
         }
-        return false;
       }
     }
 
     return false;
+  }
+
+  std::set<std::pair<int, int>> getActiveTowers() const {
+    std::set<std::pair<int, int>> res;
+    for (int type = 0; type < 4; ++type) {
+      for (auto &p : m_builds[type]) {
+        if (!p.second) {
+          res.insert({p.first});
+        }
+      }
+    }
+
+    return res;
+  }
+
+  std::set<std::pair<int, int>> getUsedTowers() const {
+    std::set<std::pair<int, int>> res;
+    for (int type = 0; type < 4; ++type) {
+      for (auto &p : m_builds[type]) {
+        if (p.second) {
+          res.insert({p.first});
+        }
+      }
+    }
+
+    return res;
   }
 
   // if meat >= 0, game continues
@@ -128,13 +156,13 @@ private:
 
   vector<vector<shared_ptr<Field>>> m_map;
   array<int, 3> m_resources;
-  array<set<pair<int, int>>, 4> m_builds;
+  array<map<pair<int, int>, bool>, 4> m_builds;
 
   array<array<int, 4>, 4> m_buildsCost;
   array<int, 4> m_buildsDamage;
 
   std::vector<Respawn> m_respawns;
-  std::vector<Enemy> m_enemies;
+//  std::vector<Enemy> m_enemies;
 
   // int m_workersCount = 0;
 

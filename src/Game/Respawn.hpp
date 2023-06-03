@@ -2,7 +2,7 @@
 #include <vector>
 #include <queue>
 #include <cmath>
-#include <sstream>
+#include <fstream>
 
 #include "Enemies.hpp"
 
@@ -21,44 +21,55 @@ public:
     }
   }
 
-  bool isEmpty() const { return m_enemyCount <= 0; }
-
-  Enemy getEnemy() {
-    m_enemyCount--;
-    return Enemy(10, 10, this);
+  Respawn(std::ifstream &f) {
+    load(f);
   }
+  void load(std::ifstream &f) {
+    f >> m_enemyCount;
+    size_t pathSize;
+    f >> pathSize;
+    for (size_t i = 0; i < pathSize; ++i) {
+      int x, y;
+      f >> x >> y;
+      m_path.push_back({x, y});
+    }
+
+    size_t enemiesCount;
+
+    f >> enemiesCount;
+    for (size_t i = 0; i < enemiesCount; ++i) {
+      m_enemies.push_back(Enemy(f));
+    }
+  }
+
+  bool isEmpty() const { return m_enemyCount <= 0 && m_enemies.size() == 0; }
+
+  void realiseEnemy() {
+    m_enemyCount--;
+    m_enemies.push_back(Enemy(10, 10));
+  }
+
+  std::pair<int, int> getCoordInPath(int pos) { return m_path[pos]; }
 
   const std::vector<std::pair<int, int>> &getPath() const { return m_path; }
 
-  std::string toString() {
-    std::stringstream out;
-    out << m_enemyCount << " ";
-    out << m_path.size() << " ";
+  void save(std::ofstream &f) {
+    f << m_enemyCount << " ";
+    f << m_path.size() << " ";
     for (const auto &p : m_path) {
-      out << p.first << ' ' << p.second << " ";
+      f << p.first << ' ' << p.second << " ";
     }
 
-    return out.str();
-  }
-
-  void fromString(std::string &str) {
-    std::istringstream out(str);
-    out >> m_enemyCount;
-    size_t tmp;
-    out >> tmp;
-    m_path.clear();
-    for (size_t i = 0; i < tmp; ++i) {
-      std::pair<int, int> p;
-      out >> p.first >> p.second;
-      m_path.push_back(p);
+    f << m_enemies.size() << std::endl;
+    for (auto &enemy : m_enemies) {
+      enemy.save(f);
     }
-
-    return ;
   }
 
-
+  std::vector<Enemy> &getEnemies() { return m_enemies; }
 
 private:
   int m_enemyCount;
   std::vector<std::pair<int, int>> m_path;
+  std::vector<Enemy> m_enemies;
 };

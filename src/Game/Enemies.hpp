@@ -2,25 +2,23 @@
 #define Enemies_hpp
 
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <queue>
 #include <cmath>
-
-class Respawn;
 
 
 // Base class: Enemy
 class Enemy {
 public:
-  Enemy(int health, int damage, const Respawn *resp);
+  Enemy(int health, int damage) : m_health(health), m_damage(damage), m_pos(0) { }
+  Enemy(std::ifstream &f) { load(f); }
 
-  void attack() {
-    std::cout << "The enemy attacks and deals " << m_damage << " damage.\n";
-  }
+  int getPosition() const { return m_pos; }
 
   bool takeDamage(int damage) {
     m_health -= damage;
-    std::cout << "The enemy takes " << damage << " damage.\n";
+    std::cout << "The enemy takes " << damage << " damage. His HP now is " << m_health << std::endl;
     if (m_health <= 0) {
       std::cout << "The enemy has been defeated.\n";
       return false;
@@ -29,30 +27,29 @@ public:
     return true;
   }
 
-  // A* algorithm implementation
-  bool move(std::pair<int, int> mainBuild) {
-    pos++;
-    if (getPosition() == mainBuild) {
-      return true;
-    }
-    return false;
+  void save(std::ofstream &f) const {
+    f << m_health << std::endl;
+    f << m_damage << std::endl;
+    f << m_pos << std::endl;
   }
+  
+  void load(std::ifstream &f) {
+    f >> m_health;
+    f >> m_damage;
+    f >> m_pos;
+  }
+
+  int move() { return ++m_pos; }
 
   int getDamage() const { return m_damage; }
 
-  std::pair<int, int> getPosition() const;
-
-
 protected:
-
-  const Respawn *m_resp;
-
   // Attributes
   int m_health;
   int m_damage;
 
   // Position
-  int pos;
+  int m_pos;
 };
 
 #endif
