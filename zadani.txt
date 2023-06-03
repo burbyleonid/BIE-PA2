@@ -1,0 +1,9 @@
+In this semestral project, I decided to work on a Tower-defense game. I think that it is going to be a simple step-by-step
+game with a few difficulty levels with the option to choose which one you would like to play. Initially player will have
+some amount of resources like gold, steel, and wood. Using the interface player is able to build different types of towers
+with different attributes (mainly damage and attack distance will change). I assume that once the game is started player 
+could build towers and once he is done with that, the enemies will try to attack the main building. By killing the different
+types of enemies, the player will be rewarded with different resources so he could add new towers. I think this function will
+be implemented by clicking on the tower to choose it and then clicking on enemies to specify which tower will attack the target.
+And this action will be repeated each step until the game ends. Also, it will be possible to load and store the game using a custom
+format .game with any preferred name. GUI will be created using the SDL2 library and graphics (texture) will be open-source pixel art images.
