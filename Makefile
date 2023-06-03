@@ -17,18 +17,20 @@ compile_flags:=  -lSDL2 -lSDL2_ttf -lSDL2_image -lX11
 all: $(program_name)
 
 $(program_name): $(object_files)
-	g++-9 -std=c++17 $^ -o $@  $(compile_flags) 
+	g++-9 -std=c++17 $^ -o $@  $(compile_flags)
+	# g++ -std=c++17 $^ -o $@  $(compile_flags) 
 
 VPATH := $(source_dirs)
 
 %.o: %.cpp 
 	g++-9 -std=c++17 $< -c $(compile_flags) $(addprefix -I, $(include_dirs)) $(addprefix -I, $(source_dirs)) -MD 
+	# g++ -std=c++17 $< -c $(compile_flags) $(addprefix -I, $(include_dirs)) $(addprefix -I, $(source_dirs)) -MD 
 
 include $(wildcard *.d) 
 
 run:
 	export DISPLAY=:0
-	./$(program_name)
+	./burbyleo/burbyleo
 
 clean:
 	-rm -f $(program_name)
@@ -43,14 +45,14 @@ doc:
 	# xeyes for testing
 
 compile: $(program_name)
-	mkdir -p ./burbyleo
-	mkdir -p ./burbyleo/src
+	mkdir -p ./burbyleo/
 	cp -R ./src/SavedGames ./burbyleo/src
 	cp -R ./src/Textures ./burbyleo/src
-	cp ./game ./burbyleo/game
+	cp ./$(program_name) ./burbyleo/$(program_name)
 	cp ./src/Coffee_Extra.ttf ./burbyleo/src/Coffee_Extra.ttf
 	rm -f *.o
 	rm -f *.d
+	mv ./burbyleo/$(program_name) ./burbyleo/burbyleo
 
 count:
 	@lines_count=$$(find . -type f \( -name "*.cpp" -o -name "*.hpp" \) -exec cat {} + | wc -l); \
