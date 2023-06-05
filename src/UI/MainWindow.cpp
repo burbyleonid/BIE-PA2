@@ -171,7 +171,7 @@ std::string MainWindow::loadMenu() {
   UIBase *m_lastHoveredElement = nullptr;
 
 
-  fs::path dbDirPath = "../SavedGames";
+  fs::path dbDirPath = "/mnt/c/Users/Leonid/Desktop/burbyleo/src/SavedGames/";
   if (!fs::is_directory(dbDirPath)) {
     return "";
   }
@@ -515,7 +515,7 @@ bool MainWindow::run(int lvl, const std::string &fileName) {
 
   Game game(lvl);
   if (fileName.size() != 0) {
-    game.load("/Users/Petr/ClionProjects/Tasks/Tasks/SavedGames/" + fileName);
+    game.load("/mnt/c/Users/Leonid/Desktop/burbyleo/src/SavedGames/" + fileName);
   }
 
   auto &map = game.getMap();
@@ -731,7 +731,7 @@ bool MainWindow::run(int lvl, const std::string &fileName) {
                                   auto fileName = UISaveDialog().getFileName();
                                   std::cout << fileName << std::endl;
 
-                                  game.save("../SavedGames/" + fileName + ".game");
+                                  game.save("/mnt/c/Users/Leonid/Desktop/burbyleo/src/SavedGames/" + fileName + ".game");
                                 });
 
 

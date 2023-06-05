@@ -29,7 +29,7 @@ std::string UILoadDialog::getFileName() {
 
     int fileIdx = -1;
 
-    fs::path dbDirPath = "../SavedGames";
+    fs::path dbDirPath = "/mnt/c/Users/Leonid/Desktop/burbyleo/src/SavedGames/";
     if (!fs::is_directory(dbDirPath)) {
         std::cout << "throw error" << std::endl;
         return "";

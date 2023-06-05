@@ -149,17 +149,17 @@ bool Game::load(const std::string &fileName) {
   }
 
   for (int type = 0; type < 4; ++type) {
-    cout << type << endl;
+    // cout << type << endl;
     size_t size;
     f >> size;
-    cout << size << endl;
+    // cout << size << endl;
     for (size_t i = 0; i < size; ++i) {
       int x, y;
       bool status;
       f >> x >> y >> status;
       m_builds[type][{x, y}] = status;
 
-      cout << x << ' ' << y << ' ' << status << std::endl;
+      // cout << x << ' ' << y << ' ' << status << std::endl;
     }
   }
 
@@ -196,13 +196,13 @@ void Game::save(const std::string &fileName) {
   }
 
   for (int type = 0; type < 4; ++type) {
-    cout << type << endl;
+    // cout << type << endl;
     f << m_builds[type].size() << endl;
-    cout << "Size = " << m_builds[type].size() << endl;
+    // cout << "Size = " << m_builds[type].size() << endl;
     for (auto &p : m_builds[type]) {
       f << p.first.first << ' ' << p.first.second << ' ' << p.second << std::endl;
 
-      cout << "(x, y, status) = " << p.first.first << ' ' << p.first.second << ' ' << p.second << std::endl;
+      // cout << "(x, y, status) = " << p.first.first << ' ' << p.first.second << ' ' << p.second << std::endl;
     }
   }
 
