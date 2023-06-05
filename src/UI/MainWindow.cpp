@@ -1,6 +1,9 @@
 #include "MainWindow.hpp"
 #include <SDL2/SDL.h>
+
 #include <SDL2/SDL_ttf.h>
+
+
 #include <iostream>
 #include "Defines.hpp"
 #include <string>

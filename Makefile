@@ -1,11 +1,13 @@
 
-program_name := game
+program_name := burbyleo
 
 source_dirs  := Game UI .
 
 include_dirs := Game UI .
 
-  
+
+# Compiler Settings
+CXX = g++
 
 source_dirs  := $(addprefix ./src/, $(source_dirs) )
 source_files := $(wildcard $(addsuffix /*.cpp, $(source_dirs) ) )
@@ -14,45 +16,34 @@ object_files := $(object_files:.cpp=.o)
 
 compile_flags:=  -lSDL2 -lSDL2_ttf -lSDL2_image -lX11
 
+
 all: $(program_name)
 
 $(program_name): $(object_files)
-	g++-9 -std=c++17 $^ -o $@  $(compile_flags)
-	# g++ -std=c++17 $^ -o $@  $(compile_flags) 
+	$(CXX) -std=c++17 $^ -o $@  $(compile_flags) 
 
 VPATH := $(source_dirs)
 
 %.o: %.cpp 
-	g++-9 -std=c++17 $< -c $(compile_flags) $(addprefix -I, $(include_dirs)) $(addprefix -I, $(source_dirs)) -MD 
-	# g++ -std=c++17 $< -c $(compile_flags) $(addprefix -I, $(include_dirs)) $(addprefix -I, $(source_dirs)) -MD 
+	$(CXX) -std=c++17 $< -c $(compile_flags) $(addprefix -I, $(include_dirs)) $(addprefix -I, $(source_dirs)) -MD 
 
 include $(wildcard *.d) 
 
 run:
 	export DISPLAY=:0
-	./burbyleo/burbyleo
+	./burbyleo
 
 clean:
-	-rm -f $(program_name)
-	-rm -Rf burbyleo
 	rm -f *.o
 	rm -f *.d
+	rm burbyleo
 
 doc:
-	@echo "Documentation statically generated in directory \"doc\"."
-	# Open Xming
-	# export DISPLAY=:0
-	# xeyes for testing
+	echo "" >> ./doc/index.html
 
 compile: $(program_name)
-	mkdir -p ./burbyleo/
-	cp -R ./src/SavedGames ./burbyleo/src
-	cp -R ./src/Textures ./burbyleo/src
-	cp ./$(program_name) ./burbyleo/$(program_name)
-	cp ./src/Coffee_Extra.ttf ./burbyleo/src/Coffee_Extra.ttf
 	rm -f *.o
 	rm -f *.d
-	mv ./burbyleo/$(program_name) ./burbyleo/burbyleo
 
 count:
 	@lines_count=$$(find . -type f \( -name "*.cpp" -o -name "*.hpp" \) -exec cat {} + | wc -l); \
