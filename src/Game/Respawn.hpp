@@ -8,6 +8,7 @@
 
 class Respawn {
 public:
+  Respawn() = default;
   Respawn(int enemyCount, std::pair<int, int> pos, std::pair<int, int> mainPos) : m_enemyCount(enemyCount)
   {
     m_path.push_back(pos);
@@ -19,6 +20,13 @@ public:
       }
       m_path.push_back(pos);
     }
+  }
+
+  ~Respawn() {
+    for (int i = 0; i < m_enemies.size(); ++i) {
+      delete m_enemies[i];
+    }
+    m_enemies.clear();
   }
 
   Respawn(std::ifstream &f) {
@@ -38,15 +46,36 @@ public:
 
     f >> enemiesCount;
     for (size_t i = 0; i < enemiesCount; ++i) {
-      m_enemies.push_back(Enemy(f));
+      int id;
+      f >> id;
+      switch (id) {
+        case DefaultEnemyT: {
+          m_enemies.push_back(new Enemy(f));
+          break;
+        }
+        case ProbEnemyT: {
+          m_enemies.push_back(new ProbEnemy(f));
+          break;
+        }
+
+        default:
+          break;
+      }
     }
   }
 
   bool isEmpty() const { return m_enemyCount <= 0 && m_enemies.size() == 0; }
 
-  void realiseEnemy() {
-    m_enemyCount--;
-    m_enemies.push_back(Enemy(10, 10));
+  bool realiseEnemy() {
+    if (m_enemyCount > 0) {
+      m_enemyCount--;
+      if (m_enemyCount & 1)
+        m_enemies.push_back(new Enemy(10, 10));
+      else
+        m_enemies.push_back(new ProbEnemy(10, 10));
+      return true;
+    }
+    return false;
   }
 
   std::pair<int, int> getCoordInPath(int pos) { return m_path[pos]; }
@@ -62,14 +91,14 @@ public:
 
     f << m_enemies.size() << std::endl;
     for (auto &enemy : m_enemies) {
-      enemy.save(f);
+      enemy->save(f);
     }
   }
 
-  std::vector<Enemy> &getEnemies() { return m_enemies; }
+  std::vector<Enemy *> &getEnemies() { return m_enemies; }
 
 private:
-  int m_enemyCount;
+  int m_enemyCount = 0;
   std::vector<std::pair<int, int>> m_path;
-  std::vector<Enemy> m_enemies;
+  std::vector<Enemy *> m_enemies;
 };

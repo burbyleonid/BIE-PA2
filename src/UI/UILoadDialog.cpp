@@ -1,9 +1,6 @@
 #include "UILoadDialog.hpp"
 #include <SDL2/SDL.h>
-
 #include <SDL2/SDL_ttf.h>
-
-
 #include <iostream>
 #include <string>
 #include <vector>
@@ -32,7 +29,7 @@ std::string UILoadDialog::getFileName() {
 
     int fileIdx = -1;
 
-    fs::path dbDirPath = "/mnt/c/Users/Leonid/Desktop/burbyleo/src/SavedGames/";
+    fs::path dbDirPath = "./src/SavedGames/";
     if (!fs::is_directory(dbDirPath)) {
         std::cout << "throw error" << std::endl;
         return "";

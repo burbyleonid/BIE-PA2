@@ -63,14 +63,13 @@ bool Game::nextStep() {
     auto &enemies = resp.getEnemies();
     for (int i = 0; i < enemies.size(); ++i) {
       auto &enemy = enemies[i];
-      auto tmp = resp.getCoordInPath(enemy.getPosition());
+      auto tmp = resp.getCoordInPath(enemy->getPosition());
       m_map[tmp.first][tmp.second]->m_type = -2;
 
-      int pos = enemy.move();
+      int pos = enemy->move();
 
       if (resp.getCoordInPath(pos) == m_mainBuild) {
-        m_mainHealth -= enemy.getDamage();
-        std:cout<<"Town hall got damaged, " << m_mainHealth << " HP left." << std::endl;
+        m_mainHealth -= enemy->getDamage();
         del.push_back(i);
       }
     }
@@ -88,17 +87,16 @@ bool Game::nextStep() {
     auto &enemies = resp.getEnemies();
     for (int i = 0; i < enemies.size(); ++i) {
       auto &enemy = enemies[i];
-      auto tmp = resp.getCoordInPath(enemy.getPosition());
-      m_map[tmp.first][tmp.second]->m_type = -3;
+      auto tmp = resp.getCoordInPath(enemy->getPosition());
+      m_map[tmp.first][tmp.second]->m_type = -3 - enemy->getId();
     }
   }
 
   for (auto &resp : m_respawns) {
-    if (!resp.isEmpty()) {
-      auto &enemies = resp.getEnemies();
-      resp.realiseEnemy();
-      auto tmp = resp.getCoordInPath(enemies.rbegin()->getPosition());
-      m_map[tmp.first][tmp.second]->m_type = -3;
+    if (resp.realiseEnemy()) {
+      auto &enemy = *resp.getEnemies().rbegin();
+      auto tmp = resp.getCoordInPath(enemy->getPosition());
+      m_map[tmp.first][tmp.second]->m_type = -3 - enemy->getId();
     }
   }
 
@@ -172,9 +170,12 @@ bool Game::load(const std::string &fileName) {
   size_t respCount;
   f >> respCount;
 
+  m_respawns.resize(respCount);
   for (size_t i = 0; i < respCount; ++i) {
-    m_respawns.push_back(Respawn(f));
+//    m_respawns.emplace_back(f);
+    m_respawns[i].load(f);
   }
+
 
   return true;
 }

@@ -47,10 +47,11 @@ public:
       auto &enemies = resp.getEnemies();
       for (int i = 0; i < enemies.size(); ++i) {
         auto &enemy = enemies[i];
-        if (resp.getCoordInPath(enemy.getPosition()) == enemyPos) {
+        if (resp.getCoordInPath(enemy->getPosition()) == enemyPos) {
           m_builds[m_map[towerPos.first][towerPos.second]->m_type][towerPos] = true;
-          if (!enemy.takeDamage(towerDamage)) {
+          if (!enemy->takeDamage(towerDamage)) {
             m_enemyScore += 10;
+            delete enemies[i];
             enemies.erase(enemies.begin() + i);
 
             return true;

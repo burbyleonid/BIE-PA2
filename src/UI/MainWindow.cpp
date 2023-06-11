@@ -1,9 +1,6 @@
 #include "MainWindow.hpp"
 #include <SDL2/SDL.h>
-
 #include <SDL2/SDL_ttf.h>
-
-
 #include <iostream>
 #include "Defines.hpp"
 #include <string>
@@ -174,7 +171,7 @@ std::string MainWindow::loadMenu() {
   UIBase *m_lastHoveredElement = nullptr;
 
 
-  fs::path dbDirPath = "/mnt/c/Users/Leonid/Desktop/burbyleo/src/SavedGames/";
+  fs::path dbDirPath = "./src/SavedGames/";
   if (!fs::is_directory(dbDirPath)) {
     return "";
   }
@@ -518,7 +515,7 @@ bool MainWindow::run(int lvl, const std::string &fileName) {
 
   Game game(lvl);
   if (fileName.size() != 0) {
-    game.load("/mnt/c/Users/Leonid/Desktop/burbyleo/src/SavedGames/" + fileName);
+    game.load("./src/SavedGames/" + fileName);
   }
 
   auto &map = game.getMap();
@@ -628,7 +625,7 @@ bool MainWindow::run(int lvl, const std::string &fileName) {
                                                  } else {
                                                    toggleTower = {-1, -1};
                                                  }
-                                               } else if (game.getMap()[i][j]->m_type == -3 && toggleTower.first != -1) {
+                                               } else if (game.getMap()[i][j]->m_type <= -3 && toggleTower.first != -1) {
                                                  if (game.towerToEnemy(toggleTower, {i, j})) {
                                                    game.getMap()[i][j]->m_type = -2;
                                                    uiMap[i][j].changeTexture(m_textures.getTexture(game.getCellType(i, j)));
@@ -734,7 +731,7 @@ bool MainWindow::run(int lvl, const std::string &fileName) {
                                   auto fileName = UISaveDialog().getFileName();
                                   std::cout << fileName << std::endl;
 
-                                  game.save("/mnt/c/Users/Leonid/Desktop/burbyleo/src/SavedGames/" + fileName + ".game");
+                                  game.save("./src/SavedGames/" + fileName + ".game");
                                 });
 
 

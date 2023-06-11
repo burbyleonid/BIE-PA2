@@ -7,7 +7,7 @@ include_dirs := Game UI .
 
 
 # Compiler Settings
-CXX = g++
+CXX = g++-9
 
 source_dirs  := $(addprefix ./src/, $(source_dirs) )
 source_files := $(wildcard $(addsuffix /*.cpp, $(source_dirs) ) )

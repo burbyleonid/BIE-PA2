@@ -4,9 +4,10 @@
 #include <SDL2/SDL_image.h>
 
 void UITextures::load(SDL_Renderer *r) {
-  vector<int> idx = { -3, -2, -1, 0, 1, 2, 3, 5 };
+  vector<int> idx = { -4, -3, -2, -1, 0, 1, 2, 3, 5 };
   
   for (auto key : idx) {
+
     string texDir = "./src/Textures";
     string fName = texDir + "/" + to_string(key) + ".png";
     

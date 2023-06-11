@@ -16,7 +16,6 @@ enum class TextLayout
     BOTTOM_RIGHT
 };
 
-
 enum ButtonState
 {
   BUTTONSTATE_DEFAULT,
